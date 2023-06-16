@@ -57,7 +57,7 @@ class DetectionPipeline(ABC):
                                                labels=labels[ind],
                                                width=2)
             im = to_pil_image(drawed_boxes.detach())
-            im.show(title=f'Image №{ind}')
+            im.show(title=f'Image #{ind}')
 
     def _filter_detection_output(self, predictions: dict, threshold: float) -> (list, list, list):
         """

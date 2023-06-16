@@ -24,6 +24,5 @@ class RetinaNetDetection(DetectionPipeline):
         self.weights = DetectionModelsWeights.RETINANET
         self.model = retinanet_resnet50_fpn(
             weights=self.weights,
-
         )
         super().__init__()
