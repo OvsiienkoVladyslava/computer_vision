@@ -3,5 +3,5 @@ from torchvision.models.detection import FasterRCNN_ResNet50_FPN_V2_Weights,\
 
 
 class DetectionModelsWeights:
-    RESNET = FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT
+    FASTER_RCNN = FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT
     RETINANET = RetinaNet_ResNet50_FPN_Weights.DEFAULT
