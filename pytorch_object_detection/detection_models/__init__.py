@@ -44,22 +44,25 @@ class DetectionPipeline(ABC):
         return raw_images, batch
 
     @staticmethod
-    def visualize_result(imgs: List[Tensor], boxes: List[list], labels: List[List[str]]) -> None:
+    def draw_boxes(imgs: List[Tensor], boxes: List[list], labels: List[List[str]]) -> list:
         """
         Visualize detected objects - image with predicted boxes and labels
         :param imgs: image on which objects wer detected
         :param boxes: predicted boxes of objects
         :param labels: predicted labels of objects
         """
+        images_with_boxes = []
         for ind, img in enumerate(imgs):
-            box = torch.stack(boxes[ind], dim=0)
-            drawed_boxes = draw_bounding_boxes(img, boxes=box,
+            # box = torch.stack(boxes[ind], dim=0)
+            predicted_boxes = torch.Tensor(boxes[ind])
+            drawn_boxes = draw_bounding_boxes(img, boxes=predicted_boxes,
                                                labels=labels[ind],
                                                width=2)
-            im = to_pil_image(drawed_boxes.detach())
-            im.show(title=f'Image #{ind}')
+            images_with_boxes.append(to_pil_image(drawn_boxes.detach()))
 
-    def _filter_detection_output(self, predictions: dict, threshold: float) -> (list, list, list):
+        return images_with_boxes
+
+    def _filter_detection_output(self, predictions: dict, threshold: float) -> dict:
         """
         Filter detected results - labels, boxes, confidence scores based on threshold of score - leave if <= threshold
         :param predictions: output of model
@@ -67,37 +70,49 @@ class DetectionPipeline(ABC):
         :return: filtered predicted labels, boxes and confidence scores
         """
         # Process and filter output of model
-        output_labels, output_boxes, output_scores = [], [], []
+        filtered_output = {
+            'labels': [],
+            'boxes': [],
+            'scores': []
+        }
         for output in predictions:
             labels, boxes, scores = [], [], []
             for ind, score in enumerate(output['scores']):
                 if score >= threshold:
-                    scores.append(score)
+                    scores.append(score.item())
                     labels.append(self.model_classes[output["labels"][ind]])
-                    boxes.append(output['boxes'][ind])
-            output_scores.append(scores)
-            output_labels.append(labels)
-            output_boxes.append(boxes)
+                    boxes.append(output['boxes'][ind].tolist())
+            filtered_output['scores'].append(scores)
+            filtered_output['labels'].append(labels)
+            filtered_output['boxes'].append(boxes)
 
-        return output_labels, output_boxes, output_scores
+        return filtered_output
 
-    def run(self, image_paths: List[str] | str, score_threshold: float = 0.9) -> (list, list, list):
+    def run(self, image_paths: List[str] | str, score_threshold: float = 0.9, to_visualize: bool = True) -> (dict, list):
         """
         Run predictions of the model.
+        :param to_visualize: to visualize results or not
         :param image_paths: path's to images or image on which detect objects
         :param score_threshold: threshold of confidence to filter results (leave if <= threshold)
         :return: predicted labels, boxes and confidence scores
         """
         # Read and preprocess images
         raw_images, batch = self._image_preprocess(image_paths)
+        image_names = [path.split('/')[-1] for path in image_paths]
 
         # Get output of model
         outputs = self.model(batch)
 
         # Process and filter output of model
-        output_labels, output_boxes, output_scores = self._filter_detection_output(outputs, score_threshold)
+        filtered_output = self._filter_detection_output(outputs, score_threshold)
+        filtered_output['images'] = image_names
+
+        # Draw boxes on input images
+        images_with_boxes = self.draw_boxes(raw_images, filtered_output['boxes'], filtered_output['labels'])
 
         # Visualize detection results
-        self.visualize_result(raw_images, output_boxes, output_labels)
+        if to_visualize:
+            for ind, im in enumerate(images_with_boxes):
+                im.show(title=f'Image: {image_names[ind]}')
 
-        return output_labels, output_boxes, output_scores
+        return filtered_output, images_with_boxes
