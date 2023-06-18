@@ -47,7 +47,8 @@ if __name__ == '__main__':
     parser.add_argument('--source-folder', type=str, default='./test_data', help='path to folder with images, e.g. "./test_data" ')
     parser.add_argument('--model-name', type=str, default='Faster R-CNN', help='model name to use, available: '
                                                                                'Faster R-CNN, RetinaNet')
-    parser.add_argument('--score-threshold', type=float, default=0.9, help='float')
+    parser.add_argument('--score-threshold', type=float, default=0.9, help='min confidence threshold of prediction,'
+                                                                           ' e.g 0.8')
     parser.add_argument('--save-folder-path', type=str, default='./test_results', help='path to folder where to save predicted labels,'
                                                                    ' boxes, scores, images, e.g. "./test_results"')
     opt = parser.parse_args()

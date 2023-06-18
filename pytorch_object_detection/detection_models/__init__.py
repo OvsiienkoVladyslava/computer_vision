@@ -53,12 +53,15 @@ class DetectionPipeline(ABC):
         """
         images_with_boxes = []
         for ind, img in enumerate(imgs):
-            # box = torch.stack(boxes[ind], dim=0)
             predicted_boxes = torch.Tensor(boxes[ind])
-            drawn_boxes = draw_bounding_boxes(img, boxes=predicted_boxes,
-                                               labels=labels[ind],
-                                               width=2)
-            images_with_boxes.append(to_pil_image(drawn_boxes.detach()))
+            try:
+                drawn_boxes = draw_bounding_boxes(img, boxes=predicted_boxes,
+                                                  labels=labels[ind],
+                                                  width=2)
+                images_with_boxes.append(to_pil_image(drawn_boxes.detach()))
+            except IndexError:
+                # Not found boxes for image so not draw them
+                images_with_boxes.append(to_pil_image(img))
 
         return images_with_boxes
 
@@ -82,13 +85,15 @@ class DetectionPipeline(ABC):
                     scores.append(score.item())
                     labels.append(self.model_classes[output["labels"][ind]])
                     boxes.append(output['boxes'][ind].tolist())
+
             filtered_output['scores'].append(scores)
             filtered_output['labels'].append(labels)
             filtered_output['boxes'].append(boxes)
 
         return filtered_output
 
-    def run(self, image_paths: List[str] | str, score_threshold: float = 0.9, to_visualize: bool = True) -> (dict, list):
+    def run(self, image_paths: List[str] | str, score_threshold: float = 0.9, to_visualize: bool = True) -> (
+            dict, list):
         """
         Run predictions of the model.
         :param to_visualize: to visualize results or not
