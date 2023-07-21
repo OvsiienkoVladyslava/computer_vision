@@ -7,11 +7,11 @@ Source: https://pytorch.org/vision/stable/models.html
 - _RetinaNet_ - improved RetinaNet model with a ResNet-50-FPN backbone, use weights pretrained on COCO dataset, box mAP = 36.4 on COCO-val2017
 
 ### How to predict classes of your data
-1.Clone the repository
+1. Clone the repository
     
 `git clone --recurse-submodules https://github.com/OvsiienkoVladyslava/computer_vision.git`  
 
-2.Make sure that you fulfill all the requirements: Python 3.10 and other in requirements.txt.
+2. Make sure that you fulfill all the requirements: Python 3.10 and other in requirements.txt.
  
 `pip install -r requirements.txt`
 
@@ -28,7 +28,7 @@ _--save-folder-path_ - path to folder where to save predicted labels, boxes, sco
 `$ python run.py --source-folder "D:\Work\computer vision\pytorch_object_detection\test_data" --model-name "RetinaNet" --score-threshold 0.8 --save-folder-path "./test_results"`<br />
 There is only 1 image (object_detection_example.jpg) in /test_data 
 
-**Image result:**
+**Image result:** <br />
 ![Detection result](../README_images/object_detection_example.jpg)
 
 **JSON file result:**<br />
