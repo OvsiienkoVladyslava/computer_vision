@@ -14,17 +14,19 @@ from typing import List
 class DetectionPipeline(ABC):
     """
     Class defining basic functionality to run pretrained object detection model on image or batch of images.
-    In __init__ func of inherit class it is needed to:
-        1. define self.weights of pretrained model
-        2. define self.model with these weights
-        3. call init of this class
     """
-    model: torchvision.models.detection
-    weights: WeightsEnum
-    preprocess_pipeline: torchvision.transforms._presets.ObjectDetection
-    model_classes: list
 
-    def __init__(self):
+    def __init__(self, weights: WeightsEnum, model: torchvision.models.detection):
+        """
+        In __init__ func of child class it is needed to:
+        1. define weights of pretrained model
+        2. define model with these weights
+        3. call init of this class
+        :param weights: pre-trained weights of model from torchvision (they are specified in WeightsEnum class )
+        :param model: initialized model with weights
+        """
+        self.weights = weights
+        self.model = model
         self.model.eval()
         self.model_classes = self.weights.meta["categories"]
         self.preprocess_pipeline = self.weights.transforms()
