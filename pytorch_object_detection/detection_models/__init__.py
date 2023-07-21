@@ -22,6 +22,7 @@ class DetectionPipeline(ABC):
         1. define weights of pretrained model
         2. define model with these weights
         3. call init of this class
+
         :param weights: pre-trained weights of model from torchvision (they are specified in WeightsEnum class )
         :param model: initialized model with weights
         """
@@ -34,6 +35,7 @@ class DetectionPipeline(ABC):
     def _image_preprocess(self, image_paths: List[str] | str) -> (List[Tensor], List[Tensor]):
         """
         Read and preprocesses images for the model
+
         :param image_paths: path's to images or image
         :return: read images and preprocessed for detection model
         """
@@ -49,6 +51,7 @@ class DetectionPipeline(ABC):
     def draw_boxes(imgs: List[Tensor], boxes: List[list], labels: List[List[str]]) -> list:
         """
         Visualize detected objects - image with predicted boxes and labels
+
         :param imgs: image on which objects wer detected
         :param boxes: predicted boxes of objects
         :param labels: predicted labels of objects
@@ -70,6 +73,7 @@ class DetectionPipeline(ABC):
     def _filter_detection_output(self, predictions: dict, threshold: float) -> dict:
         """
         Filter detected results - labels, boxes, confidence scores based on threshold of score - leave if <= threshold
+
         :param predictions: output of model
         :param threshold: threshold of confidence to filter results
         :return: filtered predicted labels, boxes and confidence scores
@@ -98,6 +102,7 @@ class DetectionPipeline(ABC):
             dict, list):
         """
         Run predictions of the model.
+
         :param to_visualize: to visualize results or not
         :param image_paths: path's to images or image on which detect objects
         :param score_threshold: threshold of confidence to filter results (leave if <= threshold)

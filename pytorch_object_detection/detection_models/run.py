@@ -7,6 +7,7 @@ from pytorch_object_detection.detection_models.models import FasterRCNNDetection
 def process_console_run(console_input: argparse.Namespace) -> None:
     """
     Logic of the console detection startup processing.
+
     :param console_input: output of console or dict with needed key values
     """
     # Select model
