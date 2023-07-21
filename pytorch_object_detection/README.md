@@ -29,9 +29,15 @@ _--save-folder-path_ - path to folder where to save predicted labels, boxes, sco
 There is only 1 image (object_detection_example.jpg) in /test_data 
 
 **Image result:**
-![Detection result](../README_images/object_detection_example.jpg)
-
-
+![Detection result1](../README_images/object_detection_example.jpg)
+![Detection result2](./../README_images/object_detection_example.jpg)
+![Detection result3](./README_images/object_detection_example.jpg)
+![Detection result4](object_detection_example.jpg)
+![Detection result5](/computer_vision/README_images/object_detection_example.jpg?raw=true)
+![Detection result6](../README_images/object_detection_example.jpg?raw=true)
+![Detection result7](./computer_vision/README_images/object_detection_example.jpg?raw=true)
+![Detection result8](./README_images/object_detection_example.jpg?raw=true)
+![Detection result9](object_detection_example.jpg?raw=true)
 **JSON file result:**<br />
 >{ <br />
 "labels": [["dog", "dog", "dog", "bird"]],<br />
