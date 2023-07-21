@@ -8,7 +8,7 @@ class FasterRCNNDetection(DetectionPipeline):
     Pretrained Faster R-CNN for object detection.
     """
     def __init__(self):
-        weights = DetectionModelsWeights.FASTER_RCNN
+        weights = DetectionModelsWeights.FASTER_RCNN.value
         model = fasterrcnn_resnet50_fpn_v2(
             weights=self.weights
         )
@@ -20,7 +20,7 @@ class RetinaNetDetection(DetectionPipeline):
     Pretrained RetinaNet for object detection.
     """
     def __init__(self):
-        weights = DetectionModelsWeights.RETINANET
+        weights = DetectionModelsWeights.RETINANET.value
         model = retinanet_resnet50_fpn_v2(
             weights=self.weights
         )
