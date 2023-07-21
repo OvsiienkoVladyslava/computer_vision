@@ -1,9 +1,17 @@
 from enum import Enum
 
-from torchvision.models.detection import FasterRCNN_ResNet50_FPN_V2_Weights,\
-    RetinaNet_ResNet50_FPN_V2_Weights
+from pytorch_object_detection.detection_models.models import RetinaNetDetection, FasterRCNNDetection
 
 
-class DetectionModelsWeights(Enum):
-    FASTER_RCNN = FasterRCNN_ResNet50_FPN_V2_Weights.COCO_V1
-    RETINANET = RetinaNet_ResNet50_FPN_V2_Weights.COCO_V1
+class DetectionModelsNames(Enum):
+    RETINANET = RetinaNetDetection
+    FASTER_RCNN = FasterRCNNDetection
+
+    @classmethod
+    def from_string(cls, model_name: str):
+        model_name = model_name.replace(' ', '_').lower()
+        for model_type in cls:
+            if model_type.name.lower() == model_name:
+                return model_type
+        raise AttributeError('This model is not implemented')
+

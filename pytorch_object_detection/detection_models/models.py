@@ -1,6 +1,15 @@
+from enum import Enum
+
 from torchvision.models.detection import fasterrcnn_resnet50_fpn_v2, retinanet_resnet50_fpn_v2
 from pytorch_object_detection.detection_models import DetectionPipeline
-from pytorch_object_detection.detection_models.configs import DetectionModelsWeights
+
+from torchvision.models.detection import FasterRCNN_ResNet50_FPN_V2_Weights, \
+    RetinaNet_ResNet50_FPN_V2_Weights
+
+
+class DetectionModelsWeights(Enum):
+    FASTER_RCNN = FasterRCNN_ResNet50_FPN_V2_Weights.COCO_V1
+    RETINANET = RetinaNet_ResNet50_FPN_V2_Weights.COCO_V1
 
 
 class FasterRCNNDetection(DetectionPipeline):

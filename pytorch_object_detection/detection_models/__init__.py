@@ -128,3 +128,4 @@ class DetectionPipeline(ABC):
                 im.show(title=f'Image: {image_names[ind]}')
 
         return filtered_output, images_with_boxes
+
