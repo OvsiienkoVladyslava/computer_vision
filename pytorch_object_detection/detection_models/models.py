@@ -19,7 +19,7 @@ class FasterRCNNDetection(DetectionPipeline):
     def __init__(self):
         weights = DetectionModelsWeights.FASTER_RCNN.value
         model = fasterrcnn_resnet50_fpn_v2(
-            weights=self.weights
+            weights=weights
         )
         super().__init__(weights=weights, model=model)
 
@@ -31,6 +31,6 @@ class RetinaNetDetection(DetectionPipeline):
     def __init__(self):
         weights = DetectionModelsWeights.RETINANET.value
         model = retinanet_resnet50_fpn_v2(
-            weights=self.weights
+            weights=weights
         )
         super().__init__(weights=weights, model=model)

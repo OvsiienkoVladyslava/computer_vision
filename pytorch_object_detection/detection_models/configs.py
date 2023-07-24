@@ -12,6 +12,5 @@ class DetectionModelsNames(Enum):
         model_name = model_name.replace(' ', '_').lower()
         for model_type in cls:
             if model_type.name.lower() == model_name:
-                return model_type
+                return model_type.value
         raise AttributeError('This model is not implemented')
-

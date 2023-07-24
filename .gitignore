@@ -155,5 +155,6 @@ cython_debug/
 # PyCharm
 .idea/
 
-# Test data
+# Test data and results
 test_data
+test_results
