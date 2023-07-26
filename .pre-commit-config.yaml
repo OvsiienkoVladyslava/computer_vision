@@ -1,0 +1,23 @@
+repos:
+- repo: local # only local possible, there is pytest hook
+  hooks:
+    - id: black
+      name: Check black
+      entry: black --line-length=120 --target-version py310
+      language: system
+      types: [ python ]
+      stages: [ commit ]
+
+    - id: isort
+      name: Check isort
+      entry: isort --profile=black
+      language: system
+      types: [ python ]
+      stages: [ commit ]
+
+    - id: flake8
+      name: Check flake8 pass
+      entry: flake8 --config=flake8.cfg
+      language: system
+      types: [ python ]
+      stages: [ commit ]
