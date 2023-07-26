@@ -1,16 +1,14 @@
 import json
 import os
+from typing import List
 
-import torchvision
 import torch
+import torchvision
 from torch import Tensor
 from torchvision.io.image import read_image
 from torchvision.models import WeightsEnum
-
-from torchvision.utils import draw_bounding_boxes
 from torchvision.transforms.functional import to_pil_image
-
-from typing import List
+from torchvision.utils import draw_bounding_boxes
 
 
 class DetectionPipeline:
@@ -62,9 +60,7 @@ class DetectionPipeline:
         for ind, img in enumerate(imgs):
             predicted_boxes = torch.Tensor(boxes[ind])
             try:
-                drawn_boxes = draw_bounding_boxes(img, boxes=predicted_boxes,
-                                                  labels=labels[ind],
-                                                  width=2)
+                drawn_boxes = draw_bounding_boxes(img, boxes=predicted_boxes, labels=labels[ind], width=2)
                 images_with_boxes.append(to_pil_image(drawn_boxes.detach()))
             except IndexError:
                 # Not found boxes for image so not draw them
@@ -81,27 +77,24 @@ class DetectionPipeline:
         :return: filtered predicted labels, boxes and confidence scores
         """
         # Process and filter output of model
-        filtered_output = {
-            'labels': [],
-            'boxes': [],
-            'scores': []
-        }
+        filtered_output = {"labels": [], "boxes": [], "scores": []}
         for output in predictions:
             labels, boxes, scores = [], [], []
-            for ind, score in enumerate(output['scores']):
+            for ind, score in enumerate(output["scores"]):
                 if score >= threshold:
                     scores.append(score.item())
                     labels.append(self.model_classes[output["labels"][ind]])
-                    boxes.append(output['boxes'][ind].tolist())
+                    boxes.append(output["boxes"][ind].tolist())
 
-            filtered_output['scores'].append(scores)
-            filtered_output['labels'].append(labels)
-            filtered_output['boxes'].append(boxes)
+            filtered_output["scores"].append(scores)
+            filtered_output["labels"].append(labels)
+            filtered_output["boxes"].append(boxes)
 
         return filtered_output
 
-    def run(self, image_paths: List[str] | str, score_threshold: float = 0.9, to_visualize: bool = True) -> (
-            dict, list):
+    def run(
+        self, image_paths: List[str] | str, score_threshold: float = 0.9, to_visualize: bool = True
+    ) -> (dict, list):
         """
         Run predictions of the model.
 
@@ -119,15 +112,15 @@ class DetectionPipeline:
 
         # Process and filter output of model
         filtered_output = self._filter_detection_output(outputs, score_threshold)
-        filtered_output['images'] = image_names
+        filtered_output["images"] = image_names
 
         # Draw boxes on input images
-        images_with_boxes = self.draw_boxes(raw_images, filtered_output['boxes'], filtered_output['labels'])
+        images_with_boxes = self.draw_boxes(raw_images, filtered_output["boxes"], filtered_output["labels"])
 
         # Visualize detection results
         if to_visualize:
             for ind, im in enumerate(images_with_boxes):
-                im.show(title=f'Image: {image_names[ind]}')
+                im.show(title=f"Image: {image_names[ind]}")
 
         return filtered_output, images_with_boxes
 
@@ -146,12 +139,12 @@ class DetectionPipeline:
         """
         # Save predictions in json file
         os.makedirs(save_folder_path, exist_ok=True)
-        with open(os.path.join(save_folder_path, 'boxes_labels_scores.json'), "w") as out_json:
+        with open(os.path.join(save_folder_path, "boxes_labels_scores.json"), "w") as out_json:
             json.dump(predictions, out_json)
 
         # Save images with drawn boxes
-        dir_for_images = os.path.join(save_folder_path, 'drawn_boxes')
+        dir_for_images = os.path.join(save_folder_path, "drawn_boxes")
         os.makedirs(dir_for_images, exist_ok=True)
 
         for ind, img in enumerate(images):
-            img.save(os.path.join(dir_for_images, predictions['images'][ind]))
+            img.save(os.path.join(dir_for_images, predictions["images"][ind]))
