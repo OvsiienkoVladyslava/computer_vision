@@ -1,3 +1,6 @@
+import json
+import os
+
 import torchvision
 import torch
 from torch import Tensor
@@ -110,7 +113,7 @@ class DetectionPipeline(ABC):
         """
         # Read and preprocess images
         raw_images, batch = self._image_preprocess(image_paths)
-        image_names = [path.split('/')[-1] for path in image_paths]
+        image_names = [path.split("\\")[-1] for path in image_paths]
 
         # Get output of model
         outputs = self.model(batch)
@@ -128,4 +131,29 @@ class DetectionPipeline(ABC):
                 im.show(title=f'Image: {image_names[ind]}')
 
         return filtered_output, images_with_boxes
+
+    @staticmethod
+    def save_results(save_folder_path: str, predictions: dict, images: list):
+        """
+        Save results of prediction in 'save_folder_path' in such structure:
+        - save_folder_path
+            - drawn_boxes - folder with images
+            - boxes_labels_scores.json - dict of predictions
+
+        :param save_folder_path: path where to save results: json file and images with detected boxes
+        :param predictions: dict of predictions(classes, confidence scores, boxes, image names)
+         that would be saved in json file (boxes_labels_scores.json)
+        :param images: images with drawn boxes to save in output folder drawn_boxes
+        """
+        # Save predictions in json file
+        os.makedirs(save_folder_path, exist_ok=True)
+        with open(os.path.join(save_folder_path, 'boxes_labels_scores.json'), "w") as out_json:
+            json.dump(predictions, out_json)
+
+        # Save images with drawn boxes
+        dir_for_images = os.path.join(save_folder_path, 'drawn_boxes')
+        os.makedirs(dir_for_images, exist_ok=True)
+
+        for ind, img in enumerate(images):
+            img.save(os.path.join(dir_for_images, predictions['images'][ind]))
 
