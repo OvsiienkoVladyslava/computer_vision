@@ -10,11 +10,10 @@ from torchvision.models import WeightsEnum
 from torchvision.utils import draw_bounding_boxes
 from torchvision.transforms.functional import to_pil_image
 
-from abc import ABC
 from typing import List
 
 
-class DetectionPipeline(ABC):
+class DetectionPipeline:
     """
     Class defining basic functionality to run pretrained object detection model on image or batch of images.
     """
@@ -156,4 +155,3 @@ class DetectionPipeline(ABC):
 
         for ind, img in enumerate(images):
             img.save(os.path.join(dir_for_images, predictions['images'][ind]))
-

@@ -48,4 +48,3 @@ if __name__ == '__main__':
                              ' e.g. ".\\test_results"')
     opt = parser.parse_args()
     process_console_run(**vars(opt))
-

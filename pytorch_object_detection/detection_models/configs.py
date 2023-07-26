@@ -1,5 +1,6 @@
 from enum import Enum
 
+from pytorch_object_detection.detection_models import DetectionPipeline
 from pytorch_object_detection.detection_models.models import RetinaNetDetection, FasterRCNNDetection
 
 
@@ -8,7 +9,12 @@ class DetectionModelsNames(Enum):
     FASTER_RCNN = FasterRCNNDetection
 
     @classmethod
-    def from_string(cls, model_name: str):
+    def from_string(cls, model_name: str) -> DetectionPipeline:
+        """
+        Get model class by string name
+        :param model_name: string name of detection model
+        :return: model class
+        """
         model_name = model_name.replace(' ', '_').lower()
         for model_type in cls:
             if model_type.name.lower() == model_name:
