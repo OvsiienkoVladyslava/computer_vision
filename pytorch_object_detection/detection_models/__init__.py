@@ -39,7 +39,7 @@ class DetectionPipeline:
         :param image_paths: path's to images or image
         :return: read images and preprocessed for detection model
         """
-        if type(image_paths) is str:
+        if isinstance(image_paths, str):
             image_paths = [image_paths]
 
         raw_images = [read_image(path) for path in image_paths]
@@ -105,7 +105,7 @@ class DetectionPipeline:
         """
         # Read and preprocess images
         raw_images, batch = self._image_preprocess(image_paths)
-        image_names = [path.split("\\")[-1] for path in image_paths]
+        image_names = [os.path.split(path)[1] for path in image_paths]
 
         # Get output of model
         outputs = self.model(batch)

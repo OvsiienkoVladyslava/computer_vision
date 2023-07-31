@@ -1,5 +1,5 @@
 # Computer Vision Pet Projects
-The goal of this repository is to solve some Computer Vision tasks using pre-trained models or train new.
+The goal of this repository is to solve some Computer Vision tasks using pre-trained models or train new ones.
 
 The repository consists of such parts:
 
