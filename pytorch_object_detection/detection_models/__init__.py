@@ -4,10 +4,8 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple
 
 import torch
-import torchvision
 from torch import Tensor
 from torchvision.io.image import read_image
-from torchvision.models import WeightsEnum
 from torchvision.transforms.functional import to_pil_image
 from torchvision.utils import draw_bounding_boxes
 
