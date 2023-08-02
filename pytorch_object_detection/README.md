@@ -20,12 +20,12 @@ Source: https://pytorch.org/vision/stable/models.html
 _--source-folder_ - path to folder with images, e.g. "D:\\project\\test_data"<br />
 _--model-name_ - model name to use, available: 'Faster R-CNN, RetinaNet'<br />
 _--score-threshold_ - min confidence threshold of prediction, e.g 0.8<br />
-_--save-folder-path_ - path to folder where to save predicted labels, boxes, scores, images, e.g. ".\\test_results"
+_--save-folder-path_ - path to folder where to save predicted labels, boxes, scores, images, e.g. "./test_results"
 
 4. Example
 
 **Console input:** <br />
-`$ python run.py --source-folder "D:\\computer vision\\pytorch_object_detection\\test_data" --model-name "RetinaNet" --score-threshold 0.8 --save-folder-path ".\\test_results"`<br />
+`$ python run.py --source-folder "D:\\computer vision\\pytorch_object_detection\\test_data" --model-name "RetinaNet" --score-threshold 0.8 --save-folder-path "./test_results"`<br />
 There is only 1 image (object_detection_example.jpg) in /test_data 
 
 **Image result:** <br />

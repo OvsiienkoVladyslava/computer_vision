@@ -28,7 +28,7 @@ def process_console_run(source_folder: str, model_name: str, score_threshold: fl
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Run inference of selected detection model")
     parser.add_argument(
-        "--source-folder", type=str, default=".\\test_data", help='path to folder with images, e.g. ".\\test_data" '
+        "--source-folder", type=str, default="./test_data", help='path to folder with images, e.g. "./test_data" '
     )
     parser.add_argument(
         "--model-name", type=str, default="Faster RCNN", help="model name to use, available: Faster RCNN, RetinaNet"
@@ -40,7 +40,7 @@ if __name__ == "__main__":
         "--save-folder-path",
         type=str,
         default=".\\test_results",
-        help="path to folder where to save predicted labels, boxes, scores, images," ' e.g. ".\\test_results"',
+        help="path to folder where to save predicted labels, boxes, scores, images," ' e.g. "./test_results"',
     )
     opt = parser.parse_args()
     process_console_run(**vars(opt))

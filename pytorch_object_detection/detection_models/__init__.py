@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List
+from typing import List, Tuple
 
 import torch
 import torchvision
@@ -32,7 +32,7 @@ class DetectionPipeline:
         self.model_classes = self.weights.meta["categories"]
         self.preprocess_pipeline = self.weights.transforms()
 
-    def _image_preprocess(self, image_paths: List[str] | str) -> (List[Tensor], List[Tensor]):
+    def _image_preprocess(self, image_paths: List[str] | str) -> Tuple[List[Tensor], List[Tensor]]:
         """
         Read and preprocesses images for the model
 
@@ -94,7 +94,7 @@ class DetectionPipeline:
 
     def run(
         self, image_paths: List[str] | str, score_threshold: float = 0.9, to_visualize: bool = True
-    ) -> (dict, list):
+    ) -> Tuple[dict, list]:
         """
         Run predictions of the model.
 
@@ -105,7 +105,7 @@ class DetectionPipeline:
         """
         # Read and preprocess images
         raw_images, batch = self._image_preprocess(image_paths)
-        image_names = [os.path.split(path)[1] for path in image_paths]
+        image_names = [os.path.basename(path) for path in image_paths]
 
         # Get output of model
         outputs = self.model(batch)
