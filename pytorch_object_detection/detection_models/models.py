@@ -11,6 +11,9 @@ from pytorch_object_detection.detection_models import DetectionPipeline
 
 
 class DetectionModelsWeights(Enum):
+    """
+    Class of listed pre-trained weights for implemented object detection models.
+    """
     FASTER_RCNN = FasterRCNN_ResNet50_FPN_V2_Weights.COCO_V1
     RETINANET = RetinaNet_ResNet50_FPN_V2_Weights.COCO_V1
 

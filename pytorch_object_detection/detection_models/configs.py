@@ -7,15 +7,19 @@ from pytorch_object_detection.detection_models.models import (
 
 
 class DetectionModelsNames(Enum):
+    """
+    Class names of implemented object detection models.
+    """
     RETINANET = RetinaNetDetection
     FASTER_RCNN = FasterRCNNDetection
 
     @classmethod
     def from_string(cls, model_name: str) -> type:
         """
-        Get model class by string name
-        :param model_name: string name of detection model
-        :return: model class
+        Get model class
+
+        :param model_name: name of detection model
+        :return: class
         """
         model_name = model_name.replace(" ", "_").lower()
         for model_type in cls:
