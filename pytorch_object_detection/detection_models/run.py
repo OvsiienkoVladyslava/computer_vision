@@ -39,7 +39,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--save-folder-path",
         type=str,
-        default=".\\test_results",
+        default="./test_results",
         help="path to folder where to save predicted labels, boxes, scores, images," ' e.g. "./test_results"',
     )
     opt = parser.parse_args()

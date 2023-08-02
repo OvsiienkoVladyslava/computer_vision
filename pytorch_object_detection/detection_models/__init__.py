@@ -36,11 +36,11 @@ class DetectionPipeline(ABC):
 
     @abstractmethod
     def load_weights(self) -> WeightsEnum:
-        pass
+        raise NotImplementedError('Method load_weights not implemented')
 
     @abstractmethod
     def load_model(self) -> torchvision.models.detection:
-        pass
+        raise NotImplementedError('Method load_model not implemented')
 
     def _image_preprocess(self, image_paths: List[str] | str) -> Tuple[List[Tensor], List[Tensor]]:
         """
