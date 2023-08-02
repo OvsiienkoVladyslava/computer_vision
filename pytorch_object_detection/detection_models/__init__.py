@@ -4,8 +4,10 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple
 
 import torch
+import torchvision
 from torch import Tensor
 from torchvision.io.image import read_image
+from torchvision.models import WeightsEnum
 from torchvision.transforms.functional import to_pil_image
 from torchvision.utils import draw_bounding_boxes
 
@@ -17,13 +19,9 @@ class DetectionPipeline(ABC):
 
     def __init__(self):
         """
-        In __init__ func of child class it is needed to:
+        In __init__ func of child class it is needed to implement 2 abstract methods:
         1. define weights of pretrained model
         2. define model with these weights
-        3. call init of this class
-
-        :param weights: pre-trained weights of model from torchvision (they are specified in WeightsEnum class )
-        :param model: initialized model with weights
         """
         # Load pre-trained weights and model
         self.weights = self.load_weights()
@@ -37,11 +35,11 @@ class DetectionPipeline(ABC):
         self.preprocess_pipeline = self.weights.transforms()
 
     @abstractmethod
-    def load_weights(self):
+    def load_weights(self) -> WeightsEnum:
         pass
 
     @abstractmethod
-    def load_model(self):
+    def load_model(self) -> torchvision.models.detection:
         pass
 
     def _image_preprocess(self, image_paths: List[str] | str) -> Tuple[List[Tensor], List[Tensor]]:
