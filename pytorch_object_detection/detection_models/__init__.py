@@ -1,5 +1,6 @@
 import json
 import os
+from abc import ABC, abstractmethod
 from typing import List, Tuple
 
 import torch
@@ -11,12 +12,12 @@ from torchvision.transforms.functional import to_pil_image
 from torchvision.utils import draw_bounding_boxes
 
 
-class DetectionPipeline:
+class DetectionPipeline(ABC):
     """
     Class defining basic functionality to run pretrained object detection model on image or batch of images.
     """
 
-    def __init__(self, weights: WeightsEnum, model: torchvision.models.detection):
+    def __init__(self):
         """
         In __init__ func of child class it is needed to:
         1. define weights of pretrained model
@@ -26,11 +27,24 @@ class DetectionPipeline:
         :param weights: pre-trained weights of model from torchvision (they are specified in WeightsEnum class )
         :param model: initialized model with weights
         """
-        self.weights = weights
-        self.model = model
+        # Load pre-trained weights and model
+        self.weights = self.load_weights()
+        self.model = self.load_model()
+
+        # Set model to evaluation mode
         self.model.eval()
+
+        # Get model classes encoding and transform input data pipeline
         self.model_classes = self.weights.meta["categories"]
         self.preprocess_pipeline = self.weights.transforms()
+
+    @abstractmethod
+    def load_weights(self):
+        pass
+
+    @abstractmethod
+    def load_model(self):
+        pass
 
     def _image_preprocess(self, image_paths: List[str] | str) -> Tuple[List[Tensor], List[Tensor]]:
         """

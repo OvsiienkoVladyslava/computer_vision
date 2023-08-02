@@ -10,6 +10,7 @@ class DetectionModelsNames(Enum):
     """
     Class names of implemented object detection models.
     """
+
     RETINANET = RetinaNetDetection
     FASTER_RCNN = FasterRCNNDetection
 
