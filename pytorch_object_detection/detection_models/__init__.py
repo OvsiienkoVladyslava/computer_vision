@@ -17,15 +17,20 @@ class DetectionPipeline(ABC):
     Class defining basic functionality to run pretrained object detection model on image or batch of images.
     """
 
-    def __init__(self):
+    def __init__(self, run_on_gpu: bool = True):
         """
         In __init__ func of child class it is needed to implement 2 abstract methods:
         1. define weights of pretrained model
         2. define model with these weights
+
+        :param run_on_gpu: if to run code on GPU
         """
+        # Select device - if GPU available and needed and print information about used device
+        self.device = self.get_device(run_on_gpu)
+
         # Load pre-trained weights and model
         self.weights = self.load_weights()
-        self.model = self.load_model()
+        self.model = self.load_model().to(self.device)
 
         # Set model to evaluation mode
         self.model.eval()
@@ -33,6 +38,26 @@ class DetectionPipeline(ABC):
         # Get model classes encoding and transform input data pipeline
         self.model_classes = self.weights.meta["categories"]
         self.preprocess_pipeline = self.weights.transforms()
+
+    @staticmethod
+    def get_device(run_on_gpu: bool = True):
+        """
+        Return cuda:0 if cuda is available and preferred in 'run_on_gpu' param
+        otherwise return cpu, print in console used device
+
+        :param run_on_gpu: if to run code on GPU
+        :return: device name (cpu or cuda:0)
+        """
+        if run_on_gpu:
+            if torch.cuda.is_available():
+                print("Cuda is available")
+                print("Using device cuda with name {}".format(torch.cuda.get_device_name(0)))
+                return torch.device("cuda:0")
+            else:
+                print("Cuda is not available, CPU is used as device")
+        else:
+            print("Using CPU as device")
+        return "cpu"
 
     @abstractmethod
     def load_weights(self) -> WeightsEnum:
@@ -53,12 +78,11 @@ class DetectionPipeline(ABC):
             image_paths = [image_paths]
 
         raw_images = [read_image(path) for path in image_paths]
-        batch = [self.preprocess_pipeline(img) for img in raw_images]
+        batch = [self.preprocess_pipeline(img).to(self.device) for img in raw_images]
 
         return raw_images, batch
 
-    @staticmethod
-    def draw_boxes(imgs: List[Tensor], boxes: List[list], labels: List[List[str]]) -> list:
+    def draw_boxes(self, imgs: List[Tensor], boxes: List[list], labels: List[List[str]]) -> list:
         """
         Visualize detected objects - image with predicted boxes and labels
 
@@ -68,7 +92,7 @@ class DetectionPipeline(ABC):
         """
         images_with_boxes = []
         for ind, img in enumerate(imgs):
-            predicted_boxes = torch.Tensor(boxes[ind])
+            predicted_boxes = torch.Tensor(boxes[ind]).to(self.device)
             try:
                 drawn_boxes = draw_bounding_boxes(img, boxes=predicted_boxes, labels=labels[ind], width=2)
                 images_with_boxes.append(to_pil_image(drawn_boxes.detach()))
