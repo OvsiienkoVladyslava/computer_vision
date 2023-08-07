@@ -15,17 +15,20 @@ Source: https://pytorch.org/vision/stable/models.html
  
 `pip install -r requirements.txt`
 
+If you want to run your code using GPU you need to install [cuda version 11.7](https://developer.nvidia.com/cuda-11-7-0-download-archive?target_os=Windows&target_arch=x86_64&target_version=11) (to check if you've installed it run in cmd `nvcc --version`)
+
 3. Run in cmd or your IDE with parameters:  
 
 _--source-folder_ - path to folder with images, e.g. "D:\\project\\test_data"<br />
 _--model-name_ - model name to use, available: 'Faster R-CNN, RetinaNet'<br />
 _--score-threshold_ - min confidence threshold of prediction, e.g 0.8<br />
-_--save-folder-path_ - path to folder where to save predicted labels, boxes, scores, images, e.g. "./test_results"
+_--save-folder-path_ - path to folder where to save predicted labels, boxes, scores, images, e.g. "./test_results"<br />
+_--run_on_gpu_ - flag, if present - run code on GPU if cuda is available otherwise run on CPU
 
 4. Example
 
 **Console input:** <br />
-`$ python run.py --source-folder "D:\\computer vision\\pytorch_object_detection\\test_data" --model-name "RetinaNet" --score-threshold 0.8 --save-folder-path "./test_results"`<br />
+`$ python run.py --source-folder "D:\\computer vision\\pytorch_object_detection\\test_data" --model-name "RetinaNet" --score-threshold 0.8 --save-folder-path "./test_results" --run_on_gpu`<br />
 There is only 1 image (object_detection_example.jpg) in /test_data 
 
 **Image result:** <br />

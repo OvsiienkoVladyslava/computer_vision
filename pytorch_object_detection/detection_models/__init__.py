@@ -1,6 +1,7 @@
 import json
 import os
 from abc import ABC, abstractmethod
+from enum import Enum
 from typing import List, Tuple
 
 import torch
@@ -12,20 +13,34 @@ from torchvision.transforms.functional import to_pil_image
 from torchvision.utils import draw_bounding_boxes
 
 
+class Device(Enum):
+    """
+    Class names of devices
+    """
+
+    GPU = "cuda:0"
+    CPU = "cpu"
+
+
 class DetectionPipeline(ABC):
     """
     Class defining basic functionality to run pretrained object detection model on image or batch of images.
     """
 
-    def __init__(self):
+    def __init__(self, run_on_gpu: bool = True):
         """
         In __init__ func of child class it is needed to implement 2 abstract methods:
         1. define weights of pretrained model
         2. define model with these weights
+
+        :param run_on_gpu: if to run code on GPU
         """
+        # Select device - if GPU available, requested and print information about used device
+        self.device = self.get_device(run_on_gpu)
+
         # Load pre-trained weights and model
         self.weights = self.load_weights()
-        self.model = self.load_model()
+        self.model = self.load_model().to(self.device)
 
         # Set model to evaluation mode
         self.model.eval()
@@ -34,13 +49,33 @@ class DetectionPipeline(ABC):
         self.model_classes = self.weights.meta["categories"]
         self.preprocess_pipeline = self.weights.transforms()
 
+    @staticmethod
+    def get_device(run_on_gpu: bool = True):
+        """
+        Return cuda:0 if cuda is available and requested in 'run_on_gpu' param
+        otherwise return cpu, print in console used device
+
+        :param run_on_gpu: if to run code on GPU
+        :return: device name (cpu or cuda:0)
+        """
+        if run_on_gpu:
+            if torch.cuda.is_available():
+                print("Cuda is available")
+                print("Using device cuda with name {}".format(torch.cuda.get_device_name(0)))
+                return torch.device(Device.GPU.value)
+            else:
+                print("Cuda is not available, CPU is used as device")
+        else:
+            print("Using CPU as device")
+        return Device.CPU.value
+
     @abstractmethod
     def load_weights(self) -> WeightsEnum:
-        raise NotImplementedError('Method load_weights not implemented')
+        raise NotImplementedError("Method load_weights not implemented")
 
     @abstractmethod
     def load_model(self) -> torchvision.models.detection:
-        raise NotImplementedError('Method load_model not implemented')
+        raise NotImplementedError("Method load_model not implemented")
 
     def _image_preprocess(self, image_paths: List[str] | str) -> Tuple[List[Tensor], List[Tensor]]:
         """
@@ -52,8 +87,8 @@ class DetectionPipeline(ABC):
         if isinstance(image_paths, str):
             image_paths = [image_paths]
 
-        raw_images = [read_image(path) for path in image_paths]
-        batch = [self.preprocess_pipeline(img) for img in raw_images]
+        raw_images = [read_image(path).to(self.device) for path in image_paths]
+        batch = [self.preprocess_pipeline(img).to(self.device) for img in raw_images]
 
         return raw_images, batch
 
@@ -89,6 +124,14 @@ class DetectionPipeline(ABC):
         # Process and filter output of model
         filtered_output = {"labels": [], "boxes": [], "scores": []}
         for output in predictions:
+
+            # If running on GPU - move on CPU as it is faster
+            if self.device == Device.GPU:
+                output["scores"] = output["labels"].to(Device.CPU)
+                output["labels"] = output["labels"].to(Device.CPU)
+                output["boxes"] = output["labels"].to(Device.CPU)
+
+            # Form new lists of scores, labels and boxes with scores >= threshold
             labels, boxes, scores = [], [], []
             for ind, score in enumerate(output["scores"]):
                 if score >= threshold:
