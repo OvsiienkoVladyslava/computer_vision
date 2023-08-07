@@ -77,7 +77,7 @@ class DetectionPipeline(ABC):
         if isinstance(image_paths, str):
             image_paths = [image_paths]
 
-        raw_images = [read_image(path) for path in image_paths]
+        raw_images = [read_image(path).to(self.device) for path in image_paths]
         batch = [self.preprocess_pipeline(img).to(self.device) for img in raw_images]
 
         return raw_images, batch
