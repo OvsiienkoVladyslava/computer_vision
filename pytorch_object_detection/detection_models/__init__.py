@@ -25,7 +25,7 @@ class DetectionPipeline(ABC):
 
         :param run_on_gpu: if to run code on GPU
         """
-        # Select device - if GPU available and needed and print information about used device
+        # Select device - if GPU available, requested and print information about used device
         self.device = self.get_device(run_on_gpu)
 
         # Load pre-trained weights and model
@@ -42,7 +42,7 @@ class DetectionPipeline(ABC):
     @staticmethod
     def get_device(run_on_gpu: bool = True):
         """
-        Return cuda:0 if cuda is available and preferred in 'run_on_gpu' param
+        Return cuda:0 if cuda is available and requested in 'run_on_gpu' param
         otherwise return cpu, print in console used device
 
         :param run_on_gpu: if to run code on GPU
@@ -61,11 +61,11 @@ class DetectionPipeline(ABC):
 
     @abstractmethod
     def load_weights(self) -> WeightsEnum:
-        raise NotImplementedError('Method load_weights not implemented')
+        raise NotImplementedError("Method load_weights not implemented")
 
     @abstractmethod
     def load_model(self) -> torchvision.models.detection:
-        raise NotImplementedError('Method load_model not implemented')
+        raise NotImplementedError("Method load_model not implemented")
 
     def _image_preprocess(self, image_paths: List[str] | str) -> Tuple[List[Tensor], List[Tensor]]:
         """

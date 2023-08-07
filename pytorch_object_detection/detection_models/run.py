@@ -4,8 +4,9 @@ import os
 from pytorch_object_detection.detection_models.configs import DetectionModelsNames
 
 
-def process_console_run(source_folder: str, model_name: str, score_threshold: float, save_folder_path: str,
-                        run_on_gpu: bool, **kwargs):
+def process_console_run(
+    source_folder: str, model_name: str, score_threshold: float, save_folder_path: str, run_on_gpu: bool, **kwargs
+):
     """
     Logic of the console detection startup processing.
 
@@ -45,8 +46,7 @@ if __name__ == "__main__":
         help="path to folder where to save predicted labels, boxes, scores, images," ' e.g. "./test_results"',
     )
     parser.add_argument(
-        "--run_on_gpu", type=bool, default=True, help="if to run code on GPU if cuda is available "
-                                                      "otherwise run on CPU"
+        "--run_on_gpu", action="store_true", help="if to run code on GPU if cuda is available otherwise " "run on CPU"
     )
 
     opt = parser.parse_args()
