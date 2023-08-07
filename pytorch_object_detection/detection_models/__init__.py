@@ -1,6 +1,7 @@
 import json
 import os
 from abc import ABC, abstractmethod
+from enum import Enum
 from typing import List, Tuple
 
 import torch
@@ -10,6 +11,15 @@ from torchvision.io.image import read_image
 from torchvision.models import WeightsEnum
 from torchvision.transforms.functional import to_pil_image
 from torchvision.utils import draw_bounding_boxes
+
+
+class Device(Enum):
+    """
+    Class names of devices
+    """
+
+    GPU = "cuda:0"
+    CPU = "cpu"
 
 
 class DetectionPipeline(ABC):
@@ -52,12 +62,12 @@ class DetectionPipeline(ABC):
             if torch.cuda.is_available():
                 print("Cuda is available")
                 print("Using device cuda with name {}".format(torch.cuda.get_device_name(0)))
-                return torch.device("cuda:0")
+                return torch.device(Device.GPU.value)
             else:
                 print("Cuda is not available, CPU is used as device")
         else:
             print("Using CPU as device")
-        return "cpu"
+        return Device.CPU.value
 
     @abstractmethod
     def load_weights(self) -> WeightsEnum:
@@ -82,7 +92,8 @@ class DetectionPipeline(ABC):
 
         return raw_images, batch
 
-    def draw_boxes(self, imgs: List[Tensor], boxes: List[list], labels: List[List[str]]) -> list:
+    @staticmethod
+    def draw_boxes(imgs: List[Tensor], boxes: List[list], labels: List[List[str]]) -> list:
         """
         Visualize detected objects - image with predicted boxes and labels
 
@@ -92,7 +103,7 @@ class DetectionPipeline(ABC):
         """
         images_with_boxes = []
         for ind, img in enumerate(imgs):
-            predicted_boxes = torch.Tensor(boxes[ind]).to(self.device)
+            predicted_boxes = torch.Tensor(boxes[ind])
             try:
                 drawn_boxes = draw_bounding_boxes(img, boxes=predicted_boxes, labels=labels[ind], width=2)
                 images_with_boxes.append(to_pil_image(drawn_boxes.detach()))
@@ -113,6 +124,14 @@ class DetectionPipeline(ABC):
         # Process and filter output of model
         filtered_output = {"labels": [], "boxes": [], "scores": []}
         for output in predictions:
+
+            # If running on GPU - move on CPU as it is faster
+            if self.device == Device.GPU:
+                output["scores"] = output["labels"].to(Device.CPU)
+                output["labels"] = output["labels"].to(Device.CPU)
+                output["boxes"] = output["labels"].to(Device.CPU)
+
+            # Form new lists of scores, labels and boxes with scores >= threshold
             labels, boxes, scores = [], [], []
             for ind, score in enumerate(output["scores"]):
                 if score >= threshold:
